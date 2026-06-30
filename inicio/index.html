@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qual fragrância é a sua? — Teste Kit Trindade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1c30;
+  --bg-elev:#11243c;
+  --bg-elev-2:#183252;
+  --navy-deep:#060e1a;
+  --navy-mid:#0e2138;
+  --gold:#5b93c9;
+  --gold-light:#8fbbe8;
+  --ember:#2f5f8f;
+  --ember-light:#4d80ad;
+  --cream:#eaf2fb;
+  --body-text:#c3d7ea;
+  --muted:#8298b0;
+  --line:rgba(234,242,251,0.14);
+  --barb:#bcdcf2;
+  --mid:#5f93bd;
+  --enig:#16314f;
+  --good:#5fb88a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--navy-deep);
+  color:var(--cream);
+  font-family:'Manrope',sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+}
+h1,h2,h3{font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:-0.01em;}
+.mono{font-family:'Space Mono',monospace;}
+a{color:inherit; text-decoration:none;}
+button{font:inherit; background:none; border:none; cursor:pointer; color:inherit;}
+.wrap{max-width:760px; margin:0 auto; padding:0 24px;}
+::selection{background:var(--gold); color:#081320;}
+a:focus-visible, button:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+
+/* ===== ambient background ===== */
+.ambient{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 45% at 80% 8%, rgba(91,147,201,0.26), transparent 60%),
+    radial-gradient(ellipse 55% 50% at 10% 95%, rgba(47,95,143,0.22), transparent 60%),
+    linear-gradient(180deg, var(--navy-deep), #081222 60%, var(--navy-deep));
+}
+.ambient::before{
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(234,242,251,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234,242,251,0.045) 1px, transparent 1px);
+  background-size:54px 54px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 10%, black, transparent 75%);
+}
+
+/* ===== header ===== */
+header{
+  position:relative; z-index:5;
+  padding:20px 0;
+}
+.logo{
+  font-family:'Montserrat',sans-serif; font-weight:700; font-size:18px;
+  letter-spacing:0.02em; text-align:center; display:block;
+}
+.logo em{font-style:normal; color:var(--gold-light); font-weight:800;}
+
+main{position:relative; z-index:2; padding:10px 0 80px;}
+
+/* ===== screens / transições ===== */
+.screen{display:none;}
+.screen.active{display:block;}
+.screen.entering{animation:screenIn .55s cubic-bezier(.16,.84,.44,1) both;}
+@keyframes screenIn{from{opacity:0; transform:translateX(28px) scale(.98);} to{opacity:1; transform:translateX(0) scale(1);}}
+
+/* stagger dos blocos principais de cada tela */
+.screen.entering > *{animation:childRise .5s ease both;}
+.screen.entering > *:nth-child(1){animation-delay:.04s;}
+.screen.entering > *:nth-child(2){animation-delay:.12s;}
+.screen.entering > *:nth-child(3){animation-delay:.2s;}
+.screen.entering > *:nth-child(4){animation-delay:.28s;}
+.screen.entering > *:nth-child(5){animation-delay:.36s;}
+@keyframes childRise{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
+
+/* stagger das opções do quiz a cada pergunta nova */
+.opt-btn{animation:btnRise .45s ease both;}
+.opt-btn:nth-child(1){animation-delay:.06s;}
+.opt-btn:nth-child(2){animation-delay:.16s;}
+.opt-btn:nth-child(3){animation-delay:.26s;}
+.opt-btn:nth-child(4){animation-delay:.36s;}
+@keyframes btnRise{from{opacity:0; transform:translateY(18px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);}}
+
+/* feedback de toque em todo botão */
+button:active, .btn-gold:active, .opt-btn:active{transform:scale(.96) !important;}
+
+/* ===== intro ===== */
+.kicker{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.22em;
+  color:var(--gold-light); text-transform:uppercase;
+  border:1px solid rgba(91,147,201,0.4);
+  padding:7px 14px; border-radius:30px;
+  margin:0 auto 22px; width:fit-content;
+}
+.kicker::before{content:'●'; color:var(--good); font-size:8px; animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+
+.intro-head{text-align:center; margin-bottom:34px;}
+.intro-head h1{font-size:clamp(30px,6.4vw,42px); line-height:1.12; margin-bottom:16px;}
+.intro-head h1 .accent{color:var(--gold-light);}
+.intro-head p{color:var(--body-text); font-size:15.5px; line-height:1.6; max-width:440px; margin:0 auto;}
+
+.locked-row{
+  display:flex; justify-content:center; gap:14px; margin:36px 0 30px;
+}
+.locked-bottle{
+  width:74px; height:128px; position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+}
+.lb-flask{
+  width:54px; height:96px; border-radius:8px 8px 18px 18px;
+  background:linear-gradient(160deg, rgba(130,152,176,0.5), rgba(130,152,176,0.15));
+  border:1px solid rgba(234,242,251,0.3);
+  filter:blur(2.5px) grayscale(0.6);
+  opacity:0.55;
+  position:relative; overflow:hidden;
+}
+.lb-cap{width:22px; height:14px; border-radius:4px 4px 2px 2px; background:rgba(234,242,251,0.35); margin-bottom:-1px;}
+.lb-lock{
+  position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+  font-size:18px; z-index:2; filter:none; opacity:0.9;
+}
+.lb-label{font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.12em; color:var(--muted); margin-top:8px;}
+.lb-photo-wrap{width:54px; height:96px; position:relative;}
+.lb-photo{display:none; width:100%; height:100%; object-fit:contain; filter:blur(2.5px) grayscale(0.6); opacity:0.55;}
+
+
+.cta-center{text-align:center;}
+.btn-gold{
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  color:#081320;
+  font-family:'Space Mono',monospace;
+  font-size:13.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  padding:18px 36px;
+  border:none; border-radius:50px;
+  cursor:pointer;
+  box-shadow:0 10px 30px -8px rgba(91,147,201,0.55);
+  transition:transform .25s, box-shadow .25s;
+  display:inline-block;
+}
+.btn-gold:hover{transform:translateY(-2px); box-shadow:0 14px 36px -6px rgba(91,147,201,0.7);}
+.btn-gold:active{transform:translateY(0);}
+
+.micro-trust{
+  margin-top:18px; font-size:12px; color:var(--muted);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+
+/* ===== mini "perfil em construção" no quiz ===== */
+.mini-race-label{
+  display:block; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+}
+.mini-race{display:flex; gap:6px; align-items:flex-end; height:24px; margin-bottom:22px;}
+.mr-bar{flex:1; background:rgba(234,242,251,0.08); border-radius:5px; height:100%; display:flex; align-items:flex-end; overflow:hidden;}
+.mr-fill{width:100%; height:0%; background:linear-gradient(180deg,var(--gold-light),var(--gold)); border-radius:5px; transition:height .55s cubic-bezier(.34,1.56,.64,1);}
+.live-count{font-family:'Space Mono',monospace; color:var(--gold-light);}
+
+.skip-link{
+  display:block; text-align:center; margin-top:26px;
+  font-size:12.5px; color:var(--muted); text-decoration:underline; text-underline-offset:3px;
+}
+.skip-link:hover{color:var(--gold-light);}
+
+/* ===== quiz ===== */
+.quiz-card{
+  background:var(--bg-elev); border:1px solid var(--line); border-radius:24px;
+  padding:34px 28px;
+}
+.progress-row{display:flex; align-items:center; gap:14px; margin-bottom:28px;}
+.progress-track{flex:1; height:6px; background:rgba(234,242,251,0.1); border-radius:10px; overflow:hidden;}
+.progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:10px; transition:width .4s ease;}
+.progress-label{font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); white-space:nowrap;}
+
+.q-text{font-size:clamp(20px,4vw,25px); line-height:1.25; margin-bottom:24px;}
+
+.opt-list{display:flex; flex-direction:column; gap:12px;}
+.opt-btn{
+  text-align:left; width:100%;
+  border:1px solid var(--line); background:var(--bg);
+  padding:18px 20px; border-radius:16px;
+  font-size:15px; color:var(--body-text);
+  display:flex; align-items:center; gap:14px;
+  transition:border-color .2s, background .2s, transform .15s;
+}
+.opt-btn .ic{font-size:20px; flex-shrink:0;}
+.opt-btn:hover{border-color:var(--gold); color:var(--cream); transform:translateX(3px);}
+.opt-btn.picked{border-color:var(--gold); background:rgba(91,147,201,0.12); color:var(--cream);}
+
+/* ===== loading ===== */
+.loading-wrap{text-align:center; padding:50px 0 30px;}
+.ring-spin{
+  width:84px; height:84px; margin:0 auto 28px;
+  border-radius:50%;
+  border:3px solid rgba(234,242,251,0.1);
+  border-top-color:var(--gold-light);
+  animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Space Mono',monospace; font-size:13px; color:var(--gold-light); letter-spacing:0.05em; min-height:20px;}
+.loading-bar-track{max-width:280px; margin:22px auto 0; height:5px; background:rgba(234,242,251,0.1); border-radius:10px; overflow:hidden;}
+.loading-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:10px;}
+
+/* ===== reveal ===== */
+.reveal-eyebrow{text-align:center; margin-bottom:8px;}
+.reveal-eyebrow span{
+  font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--good);
+}
+.reveal-head{text-align:center; margin-bottom:30px;}
+.reveal-head h2{font-size:clamp(24px,5vw,32px);}
+
+.trio-row{display:flex; justify-content:center; align-items:flex-end; gap:18px; margin-bottom:34px;}
+.trio-slot{text-align:center;}
+.trio-slot.locked .lb-flask{width:46px; height:80px;}
+.trio-slot .lb-label{margin-top:6px;}
+
+.winner-card{
+  position:relative;
+  max-width:300px; margin:0 auto 30px;
+  background:var(--bg-elev); border:1px solid var(--line); border-radius:24px;
+  padding:26px 24px 24px;
+  text-align:center;
+  overflow:hidden;
+}
+.winner-flask-wrap{height:150px; display:flex; align-items:flex-end; justify-content:center; margin-bottom:14px;}
+.w-photo-wrap{width:110px; height:150px; position:relative;}
+.w-photo{display:none; width:100%; height:100%; object-fit:contain;}
+.w-flask{width:78px; height:140px; border-radius:10px 10px 22px 22px; position:relative; overflow:hidden; border:1px solid rgba(234,242,251,0.4);}
+.w-flask::after{content:'';position:absolute; inset:0; background:linear-gradient(115deg, rgba(255,255,255,0.45) 0%, transparent 24%, transparent 70%, rgba(255,255,255,0.15) 100%);}
+.w-liquid{position:absolute; left:0; right:0; bottom:0; height:60%;}
+.w-cap{width:30px; height:18px; border-radius:5px 5px 2px 2px; margin:0 auto -1px; position:relative; z-index:2;}
+
+.w-name{font-size:22px; margin-bottom:4px;}
+.w-tag{font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:var(--gold-light); text-transform:uppercase; display:block; margin-bottom:14px;}
+.w-desc{font-size:13.5px; color:var(--body-text); line-height:1.6; margin-bottom:6px;}
+
+.scratch-overlay{
+  position:absolute; inset:0; border-radius:24px; z-index:10;
+  cursor:grab; touch-action:none;
+  transition:opacity .5s ease;
+}
+.scratch-overlay.cleared{opacity:0; pointer-events:none;}
+.scratch-hint{
+  position:absolute; inset:0; z-index:11; pointer-events:none;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  font-family:'Space Mono',monospace; color:#081320; text-align:center;
+  transition:opacity .5s ease;
+}
+.scratch-hint .big{font-size:26px;}
+.scratch-hint .small{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.75;}
+.scratch-overlay.cleared + .scratch-hint{opacity:0;}
+
+.reveal-fallback{
+  display:block; margin:0 auto 30px; text-align:center;
+  font-size:12px; color:var(--muted); text-decoration:underline; text-underline-offset:3px;
+  opacity:0; animation:appearLate 0.4s ease 3.2s forwards;
+}
+.reveal-fallback:hover{color:var(--gold-light);}
+@keyframes appearLate{to{opacity:1;}}
+
+.locked-note{
+  text-align:center; font-size:12.5px; color:var(--muted); max-width:380px; margin:0 auto 34px; line-height:1.6;
+}
+.locked-note b{color:var(--gold-light);}
+
+/* ===== offer block in reveal ===== */
+.offer-box{
+  background:var(--bg-elev); border:1px solid var(--gold); border-radius:24px;
+  padding:30px 26px; text-align:center;
+  background-image:linear-gradient(165deg, rgba(91,147,201,0.12), transparent 60%);
+}
+.coupon{
+  font-family:'Space Mono',monospace; font-size:13px; letter-spacing:0.14em;
+  border:1px dashed var(--gold-light); border-radius:14px; padding:10px 16px;
+  display:inline-block; margin-bottom:18px; color:var(--gold-light);
+}
+.coupon b{color:var(--cream); font-size:15px;}
+
+.countdown{display:flex; justify-content:center; gap:10px; margin-bottom:22px;}
+.cd-box{background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:10px 14px; text-align:center; min-width:56px;}
+.cd-box b{display:block; font-family:'Montserrat',sans-serif; font-size:20px; color:var(--gold-light);}
+.cd-box span{font-size:8.5px; letter-spacing:0.1em; color:var(--muted); font-family:'Space Mono',monospace;}
+
+.offer-price{margin-bottom:20px;}
+.offer-price .old{font-size:13px; color:var(--muted); text-decoration:line-through; margin-right:6px;}
+.offer-price .now{font-family:'Montserrat',sans-serif; font-size:30px; color:var(--cream);}
+.offer-price .inst{display:block; font-size:11.5px; color:var(--muted); margin-top:2px;}
+
+.trust-mini{
+  display:flex; justify-content:center; gap:22px; margin-top:24px; flex-wrap:wrap;
+}
+.trust-mini span{font-size:11px; color:var(--muted); display:flex; align-items:center; gap:5px;}
+
+/* CTA final pulsando — chama o olho de volta */
+.offer-box .btn-gold{animation:breathe 2.4s ease-in-out infinite;}
+@keyframes breathe{
+  0%,100%{box-shadow:0 10px 30px -8px rgba(91,147,201,0.55);}
+  50%{box-shadow:0 16px 46px -6px rgba(91,147,201,0.9);}
+}
+
+/* confete na revelação */
+.confetti-layer{position:fixed; inset:0; z-index:90; pointer-events:none; overflow:hidden;}
+.confetti-piece{
+  position:absolute; top:-20px; border-radius:2px; opacity:0;
+  animation:confettiFall 1.7s ease-in forwards;
+}
+@keyframes confettiFall{
+  0%{opacity:1; transform:translateY(0) rotate(0deg);}
+  100%{opacity:0; transform:translateY(110vh) rotate(540deg);}
+}
+
+footer{position:relative; z-index:2; text-align:center; padding:30px 0; font-size:11px; color:var(--muted);}
+
+/* ===== toast ===== */
+.toast{
+  position:fixed; left:16px; bottom:16px; z-index:80;
+  background:var(--bg-elev); border:1px solid var(--line); border-radius:16px;
+  padding:12px 16px; max-width:270px;
+  display:flex; align-items:center; gap:10px;
+  font-size:12.5px; color:var(--body-text);
+  transform:translateY(120%); opacity:0;
+  transition:transform .45s ease, opacity .45s ease;
+  box-shadow:0 14px 30px -10px rgba(0,0,0,0.5);
+}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast .dot{width:8px; height:8px; border-radius:50%; background:var(--good); flex-shrink:0;}
+@media(max-width:480px){.toast{left:10px; right:10px; max-width:none;}}
+
+/* ===== ajustes mobile ===== */
+footer{padding-bottom:calc(30px + env(safe-area-inset-bottom));}
+.toast{bottom:calc(16px + env(safe-area-inset-bottom));}
+@media(max-width:420px){
+  .wrap{padding:0 18px;}
+  header{padding:16px 0;}
+  .intro-head{margin-bottom:26px;}
+  .locked-row{gap:10px; margin:28px 0 26px;}
+  .locked-bottle{width:64px; height:112px;}
+  .lb-flask, .lb-photo-wrap{width:48px; height:88px;}
+  .quiz-card{padding:24px 18px;}
+  .winner-card{padding:22px 16px 18px; max-width:260px;}
+  .w-photo-wrap{width:90px; height:130px;}
+  .offer-box{padding:24px 18px;}
+  .countdown{gap:8px;}
+  .cd-box{min-width:48px; padding:9px 10px;}
+  .trust-mini{gap:14px;}
+  .btn-gold{padding:16px 28px; font-size:12.5px;}
+}
+@media(max-width:340px){
+  .locked-bottle{width:56px;}
+}
+</style>
+</head>
+<body>
+
+<!--
+  📸 IMAGENS REAIS DOS PRODUTOS
+  Troque os arquivos da pasta /images/ pelas fotos reais dos frascos:
+    images/barbarius.png
+    images/midtown.png
+    images/enigma.png
+  Recomendado: PNG com fundo transparente, proporção vertical (ex.: 500x900px).
+  Enquanto os arquivos não existirem, o site usa um frasco ilustrado
+  automaticamente no lugar — nada quebra, nenhum ícone de imagem
+  quebrada aparece pro usuário.
+-->
+
+<div class="ambient"></div>
+
+<header>
+  <span class="logo">KIT <em>TRINDADE</em></span>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== TELA 1 — INTRO ===== -->
+  <section class="screen active" id="screen-intro">
+    <div class="kicker">teste rápido · 30 segundos</div>
+    <div class="intro-head">
+      <h1>Qual dos <span class="accent">3 frascos</span><br>tem a sua cara?</h1>
+      <p>Responde 3 perguntas rápidas que eu te mostro qual fragrância do Kit Trindade combina com seu jeito — e libero um desconto só pra quem termina o teste.</p>
+    </div>
+
+    <div class="locked-row">
+      <div class="locked-bottle">
+        <div class="lb-photo-wrap">
+          <img class="lb-photo" src="images/barbarius.png" alt="Frasco Barbarius"
+               onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+               onerror="this.style.display='none';">
+          <div class="lb-flask" style="background:linear-gradient(160deg, rgba(188,220,242,0.5), rgba(188,220,242,0.12));"></div>
+        </div>
+        <div class="lb-lock">🔒</div>
+        <div class="lb-label">???</div>
+      </div>
+      <div class="locked-bottle">
+        <div class="lb-photo-wrap">
+          <img class="lb-photo" src="images/midtown.png" alt="Frasco Midtown"
+               onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+               onerror="this.style.display='none';">
+          <div class="lb-flask" style="background:linear-gradient(160deg, rgba(95,147,189,0.45), rgba(95,147,189,0.1));"></div>
+        </div>
+        <div class="lb-lock">🔒</div>
+        <div class="lb-label">???</div>
+      </div>
+      <div class="locked-bottle">
+        <div class="lb-photo-wrap">
+          <img class="lb-photo" src="images/enigma.png" alt="Frasco Enigma"
+               onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+               onerror="this.style.display='none';">
+          <div class="lb-flask" style="background:linear-gradient(160deg, rgba(35,68,107,0.5), rgba(22,49,79,0.12));"></div>
+        </div>
+        <div class="lb-lock">🔒</div>
+        <div class="lb-label">???</div>
+      </div>
+    </div>
+
+    <div class="cta-center">
+      <button class="btn-gold" id="btnStart">Começar o teste →</button>
+      <div class="micro-trust"><span class="live-count" id="liveCount">142</span><span>pessoas fazendo o teste agora</span></div>
+    </div>
+  </section>
+
+  <!-- ===== TELA 2 — QUIZ ===== -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-card">
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">1 / 3</div>
+      </div>
+      <h3 class="q-text" id="qText">—</h3>
+      <span class="mini-race-label">seu perfil sendo construído</span>
+      <div class="mini-race">
+        <div class="mr-bar"><div class="mr-fill" id="mrBarbarius"></div></div>
+        <div class="mr-bar"><div class="mr-fill" id="mrMidtown"></div></div>
+        <div class="mr-bar"><div class="mr-fill" id="mrEnigma"></div></div>
+      </div>
+      <div class="opt-list" id="optList"></div>
+    </div>
+  </section>
+
+  <!-- ===== TELA 3 — LOADING ===== -->
+  <section class="screen" id="screen-loading">
+    <div class="loading-wrap">
+      <div class="ring-spin"></div>
+      <div class="loading-text" id="loadingText">Cruzando suas respostas...</div>
+      <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingFill"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== TELA 4 — RESULTADO ===== -->
+  <section class="screen" id="screen-reveal">
+    <div class="reveal-eyebrow"><span>✓ teste concluído</span></div>
+    <div class="reveal-head">
+      <h2>Sua fragrância foi encontrada</h2>
+    </div>
+
+    <div class="winner-card" id="winnerCard">
+      <div class="winner-flask-wrap">
+        <div class="w-photo-wrap">
+          <img class="w-photo" id="wPhoto" src="" alt=""
+               onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+               onerror="this.style.display='none';">
+          <div>
+            <div class="w-cap" id="wCap"></div>
+            <div class="w-flask" id="wFlask">
+              <div class="w-liquid" id="wLiquid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3 class="w-name" id="wName">—</h3>
+      <span class="w-tag" id="wTag">—</span>
+      <p class="w-desc" id="wDesc">—</p>
+
+      <canvas class="scratch-overlay" id="scratchCanvas"></canvas>
+      <div class="scratch-hint" id="scratchHint">
+        <span class="big">🎁</span>
+        <span class="small">Raspe aqui pra revelar</span>
+      </div>
+    </div>
+
+    <button class="reveal-fallback" id="btnForceReveal">não consigo raspar — toque aqui pra revelar</button>
+
+    <p class="locked-note">Os outros <b>2 frascos</b> continuam guardados — eles vêm completos no Kit Trindade, junto com o seu resultado.</p>
+
+    <div class="offer-box">
+      <div class="coupon">cupom liberado: <b id="couponCode">TRINDADE20</b></div>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><b id="cdM">10</b><span>MIN</span></div>
+        <div class="cd-box"><b id="cdS">00</b><span>SEG</span></div>
+      </div>
+      <div class="offer-price">
+        <span class="old">R$209,90</span><span class="now">R$109,90</span>
+        <span class="inst">à vista no Pix, ou 3x sem juros</span>
+      </div>
+      <a href="kit-trindade-landing.html#oferta" class="btn-gold">Quero meu Kit com 20% OFF</a>
+      <div class="trust-mini">
+        <span>🛡️ Garantia de 15 dias</span>
+        <span>🚚 Frete grátis</span>
+        <span>⭐ 4.9/5 · 400K+ vendidos</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>© 2026 Kit Trindade · Resultado baseado nas suas respostas ao teste</footer>
+
+<div class="toast" id="toast">
+  <span class="dot"></span>
+  <span id="toastText">—</span>
+</div>
+
+<script>
+// ---------------------------------------------------------
+// dados das fragrâncias
+// ---------------------------------------------------------
+const FR = {
+  barbarius:{
+    name:'Barbarius', tag:'Cítrico · Vibrante · Moderno',
+    desc:'Frescor intenso com rastro moderno — bergamota e mandarina no abrir, cedro e musk no fundo. Pra quem não para.',
+    liquid:'linear-gradient(180deg, rgba(168,206,235,0.92), rgba(120,168,205,0.97))',
+    flask:'linear-gradient(160deg, rgba(188,220,242,0.55), rgba(188,220,242,0.16))',
+    cap:'linear-gradient(135deg,#8fbbe8,#5b93c9)',
+    code:'BARBARIUS20'
+  },
+  midtown:{
+    name:'Midtown', tag:'Aromático · Fresco · Amadeirado',
+    desc:'Elegância urbana sem esforço — lavanda e bergamota com fundo de cedro e fava tonka. Pra o seu dia a dia.',
+    liquid:'linear-gradient(180deg, rgba(95,147,189,0.9), rgba(56,99,138,0.97))',
+    flask:'linear-gradient(160deg, rgba(95,147,189,0.45), rgba(95,147,189,0.14))',
+    cap:'linear-gradient(135deg,#7fa8cc,#4d80ad)',
+    code:'MIDTOWN20'
+  },
+  enigma:{
+    name:'Enigma', tag:'Aromático · Envolvente · Misterioso',
+    desc:'Presença que fica na lembrança — bergamota, flor de laranjeira e fundo de âmbar cinzento. Pra quem quer ser notado.',
+    liquid:'linear-gradient(180deg, rgba(35,68,107,0.95), rgba(13,33,56,0.98))',
+    flask:'linear-gradient(160deg, rgba(35,68,107,0.55), rgba(22,49,79,0.18))',
+    cap:'linear-gradient(135deg,#4d80ad,#16314f)',
+    code:'ENIGMA20'
+  }
+};
+const PRIORITY = ['enigma','midtown','barbarius']; // critério de desempate
+
+// ---------------------------------------------------------
+// quiz
+// ---------------------------------------------------------
+const QUESTIONS = [
+  {
+    text:'Como é o seu dia mais comum?',
+    options:[
+      {ic:'💼', label:'Reuniões, rotina e foco', frag:'midtown'},
+      {ic:'🏋️', label:'Treino, agito e adrenalina', frag:'barbarius'},
+      {ic:'🌙', label:'Trabalho de dia, plano à noite', frag:'enigma'}
+    ]
+  },
+  {
+    text:'Numa sexta à noite, você está...',
+    options:[
+      {ic:'🍝', label:'Num jantar tranquilo, boa conversa', frag:'midtown'},
+      {ic:'🔥', label:'Na balada com a galera', frag:'barbarius'},
+      {ic:'🍷', label:'Num encontro a dois, clima baixo', frag:'enigma'}
+    ]
+  },
+  {
+    text:'Escolha a palavra que mais combina com você:',
+    options:[
+      {ic:'🤝', label:'Confiança', frag:'midtown'},
+      {ic:'⚡', label:'Energia', frag:'barbarius'},
+      {ic:'🌫️', label:'Mistério', frag:'enigma'}
+    ]
+  }
+];
+
+let qIndex = 0;
+const scores = {barbarius:0, midtown:0, enigma:0};
+
+const screens = {
+  intro: document.getElementById('screen-intro'),
+  quiz: document.getElementById('screen-quiz'),
+  loading: document.getElementById('screen-loading'),
+  reveal: document.getElementById('screen-reveal')
+};
+function showScreen(key, onShown){
+  const next = screens[key];
+  const current = document.querySelector('.screen.active');
+  if(current === next) return;
+  if(current){
+    current.style.transition = 'opacity .22s ease, transform .22s ease';
+    current.style.opacity = '0';
+    current.style.transform = 'translateX(-18px)';
+  }
+  setTimeout(()=>{
+    if(current){
+      current.classList.remove('active');
+      current.style.transition = '';
+      current.style.opacity = '';
+      current.style.transform = '';
+    }
+    next.classList.add('active');
+    // só agora a tela tem layout real (display:block) — seguro pra medir dimensões
+    if(typeof onShown === 'function') onShown();
+    next.classList.remove('entering');
+    void next.offsetWidth; // força reflow pra reiniciar a animação
+    next.classList.add('entering');
+    setTimeout(()=> next.classList.remove('entering'), 600);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }, current ? 220 : 0);
+}
+
+document.getElementById('btnStart').addEventListener('click', ()=>{
+  qIndex = 0;
+  scores.barbarius = 0; scores.midtown = 0; scores.enigma = 0;
+  updateMiniRace();
+  renderQuestion();
+  showScreen('quiz');
+});
+
+function renderQuestion(){
+  const q = QUESTIONS[qIndex];
+  document.getElementById('progressFill').style.width = ((qIndex)/QUESTIONS.length*100)+'%';
+  document.getElementById('progressLabel').textContent = (qIndex+1)+' / '+QUESTIONS.length;
+  document.getElementById('qText').textContent = q.text;
+  const list = document.getElementById('optList');
+  list.innerHTML = '';
+  q.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="ic">'+opt.ic+'</span><span>'+opt.label+'</span>';
+    btn.addEventListener('click', ()=>{
+      btn.classList.add('picked');
+      scores[opt.frag]++;
+      document.getElementById('progressFill').style.width = ((qIndex+1)/QUESTIONS.length*100)+'%';
+      updateMiniRace();
+      setTimeout(()=>{
+        qIndex++;
+        if(qIndex < QUESTIONS.length){
+          renderQuestion();
+        } else {
+          runLoading();
+        }
+      }, 280);
+    });
+    list.appendChild(btn);
+  });
+}
+
+function pickWinner(){
+  let best = PRIORITY[0];
+  PRIORITY.forEach(key=>{
+    if(scores[key] > scores[best]) best = key;
+  });
+  return best;
+}
+
+function updateMiniRace(){
+  const total = Math.max(1, scores.barbarius + scores.midtown + scores.enigma);
+  document.getElementById('mrBarbarius').style.height = (scores.barbarius/total*100)+'%';
+  document.getElementById('mrMidtown').style.height = (scores.midtown/total*100)+'%';
+  document.getElementById('mrEnigma').style.height = (scores.enigma/total*100)+'%';
+}
+
+const LOADING_MESSAGES = [
+  'Cruzando suas respostas...',
+  'Comparando com +400 mil perfis...',
+  'Calculando seu perfil olfativo...',
+  'Quase lá...'
+];
+function runLoading(){
+  showScreen('loading');
+  const fill = document.getElementById('loadingFill');
+  const text = document.getElementById('loadingText');
+  let pct = 0;
+  let msgIdx = 0;
+  text.textContent = LOADING_MESSAGES[0];
+  const interval = setInterval(()=>{
+    pct += Math.random()*18 + 8;
+    if(pct > 100) pct = 100;
+    fill.style.width = pct + '%';
+    const newMsgIdx = Math.min(LOADING_MESSAGES.length-1, Math.floor(pct/100*LOADING_MESSAGES.length));
+    if(newMsgIdx !== msgIdx){ msgIdx = newMsgIdx; text.textContent = LOADING_MESSAGES[msgIdx]; }
+    if(pct >= 100){
+      clearInterval(interval);
+      setTimeout(()=> showResult(pickWinner()), 450);
+    }
+  }, 260);
+}
+
+// ---------------------------------------------------------
+// resultado
+// ---------------------------------------------------------
+function showResult(key){
+  const f = FR[key];
+  document.getElementById('wName').textContent = f.name;
+  document.getElementById('wTag').textContent = f.tag;
+  document.getElementById('wDesc').textContent = f.desc;
+  document.getElementById('wFlask').style.background = f.flask;
+  document.getElementById('wLiquid').style.background = f.liquid;
+  document.getElementById('wCap').style.background = f.cap;
+  document.getElementById('couponCode').textContent = f.code;
+
+  // foto real do produto (com fallback automático pro frasco ilustrado)
+  const photo = document.getElementById('wPhoto');
+  photo.style.display = 'none';
+  photo.nextElementSibling.style.display = 'block';
+  photo.src = 'images/' + key + '.png';
+  photo.alt = 'Frasco ' + f.name;
+
+  showScreen('reveal', ()=>{
+    initScratchCard();
+    startCountdown();
+  });
+}
+
+// ---------------------------------------------------------
+// raspadinha (canvas)
+// ---------------------------------------------------------
+function initScratchCard(){
+  const oldCanvas = document.getElementById('scratchCanvas');
+  const canvas = oldCanvas.cloneNode(false); // remove listeners de uma eventual execução anterior
+  canvas.id = 'scratchCanvas';
+  oldCanvas.replaceWith(canvas);
+  const hint = document.getElementById('scratchHint');
+  const card = document.getElementById('winnerCard');
+  canvas.classList.remove('cleared');
+  hint.style.opacity = '1';
+
+  const rect = card.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  canvas.style.width = rect.width+'px';
+  canvas.style.height = rect.height+'px';
+
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  grad.addColorStop(0,'#9cc7ec');
+  grad.addColorStop(0.5,'#5b93c9');
+  grad.addColorStop(1,'#2f5f8f');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  let revealed = false;
+  let drawing = false;
+
+  function getPos(e){
+    const r = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    return {x:cx, y:cy};
+  }
+  function scratchAt(x,y){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x,y,26,0,Math.PI*2);
+    ctx.fill();
+  }
+  function checkProgress(){
+    if(revealed) return;
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let cleared = 0, total = 0;
+    for(let i=3; i<data.length; i+=4*8){
+      total++;
+      if(data[i] === 0) cleared++;
+    }
+    if(cleared/total > 0.42){
+      revealed = true;
+      doReveal();
+    }
+  }
+  function doReveal(){
+    canvas.classList.add('cleared');
+    hint.style.opacity = '0';
+    fireConfetti();
+  }
+  function start(e){ drawing = true; const p = getPos(e); scratchAt(p.x,p.y); }
+  function move(e){
+    if(!drawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    scratchAt(p.x,p.y);
+    checkProgress();
+  }
+  function end(){ drawing = false; checkProgress(); }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:true});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+
+  document.getElementById('btnForceReveal').onclick = ()=>{
+    if(!revealed){ revealed = true; doReveal(); }
+  };
+}
+
+// ---------------------------------------------------------
+// countdown da oferta
+// ---------------------------------------------------------
+function startCountdown(){
+  let total = 10*60;
+  const m = document.getElementById('cdM'), s = document.getElementById('cdS');
+  clearInterval(window.__cdInt);
+  function tick(){
+    if(total <= 0) total = 10*60;
+    total--;
+    m.textContent = String(Math.floor(total/60)).padStart(2,'0');
+    s.textContent = String(total%60).padStart(2,'0');
+  }
+  tick();
+  window.__cdInt = setInterval(tick, 1000);
+}
+
+// ---------------------------------------------------------
+// contador "ao vivo" no hero
+// ---------------------------------------------------------
+(function(){
+  const el = document.getElementById('liveCount');
+  let n = 142;
+  setInterval(()=>{
+    n += Math.floor(Math.random()*5) - 2;
+    if(n < 90) n = 90;
+    if(n > 210) n = 210;
+    el.textContent = n;
+  }, 2600);
+})();
+
+// ---------------------------------------------------------
+// toast de prova social
+// ---------------------------------------------------------
+(function(){
+  const names = ['Rafael, SP','Lucas, RJ','Diego, MG','Pedro, PR','Gustavo, BA','Thiago, RS','André, SC'];
+  const actions = [
+    'acabou de garantir o desconto',
+    'completou o teste agora',
+    'resgatou o cupom há instantes',
+    'garantiu o Kit Trindade'
+  ];
+  const toast = document.getElementById('toast');
+  const text = document.getElementById('toastText');
+  function fire(){
+    const n = names[Math.floor(Math.random()*names.length)];
+    const a = actions[Math.floor(Math.random()*actions.length)];
+    text.textContent = n + ' ' + a;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 4200);
+  }
+  setTimeout(()=>{
+    fire();
+    setInterval(fire, 9000);
+  }, 6000);
+})();
+// ---------------------------------------------------------
+// confete de comemoração ao revelar o resultado
+// ---------------------------------------------------------
+function fireConfetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#5b93c9','#8fbbe8','#9cc7ec','#eaf2fb','#4d80ad'];
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  document.body.appendChild(layer);
+  for(let i=0; i<40; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const size = 5 + Math.random()*6;
+    p.style.width = size+'px';
+    p.style.height = (size*1.6)+'px';
+    p.style.left = (Math.random()*100)+'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay = (Math.random()*0.4)+'s';
+    p.style.animationDuration = (1.3 + Math.random()*0.8)+'s';
+    layer.appendChild(p);
+  }
+  setTimeout(()=> layer.remove(), 2400);
+}
+
+// ---------------------------------------------------------
+// animação de entrada na primeira tela
+// ---------------------------------------------------------
+window.addEventListener('DOMContentLoaded', ()=>{
+  const intro = screens.intro;
+  intro.classList.add('entering');
+  setTimeout(()=> intro.classList.remove('entering'), 600);
+});
+</script>
+</body>
+</html>
