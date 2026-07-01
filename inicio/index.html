@@ -84,11 +84,12 @@ header{
   flex-shrink:0;
   width:100%;
 }
-.logo{
-  font-family:'Montserrat',sans-serif; font-weight:700; font-size:18px;
-  letter-spacing:0.02em; text-align:center; display:block;
+.logo-img{
+  display:block;
+  margin:0 auto;
+  height:32px;   /* controla o tamanho da logo — ajuste esse valor */
+  width:auto;
 }
-.logo em{font-style:normal; color:var(--gold-light); font-weight:800;}
 
 main{
   position:relative; z-index:2;
@@ -411,7 +412,7 @@ footer{padding-bottom:calc(30px + env(safe-area-inset-bottom));}
 <div class="ambient"></div>
 
 <header>
-  <span class="logo">KIT <em>TRINDADE</em></span>
+  <img src="/images/logo.png" alt="Kit Trindade" class="logo-img">
 </header>
 
 <main>
