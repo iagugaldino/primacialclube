@@ -502,13 +502,13 @@ const CHANCES = [
     chip:'chance 1 de 3',
     headline:'Vamos começar a raspar!',
     icon:'🎟️',
-    title:'20% OFF liberado',
-    desc:'Desconto extra garantido na sua compra. Continua raspando, o prêmio só cresce.',
+    title:'Não foi dessa vez!',
+    desc:'Não precisa desistir, você ainda tem 2 tentativas. Continua raspando, o prêmio só cresce.',
     big:false
   },
   {
     chip:'chance 2 de 3',
-    headline:'Uou, essa foi especial:',
+    headline:'Será?, essa é pra você:',
     icon:'🏆',
     title:'KIT TRINDADE COMPLETO',
     desc:'As 3 fragrâncias liberadas — Barbarius, Midtown e Enigma — pro presente do seu pai.',
@@ -516,10 +516,10 @@ const CHANCES = [
   },
   {
     chip:'chance 3 de 3',
-    headline:'Sua última chance:',
+    headline:'Vai que tem algo te esperando:',
     icon:'🎁',
-    title:'Frete grátis + embalagem de presente',
-    desc:'Chega prontinho pra entregar, sem custo extra de envio.',
+    title:'Frete com desconto + embalagem de presente',
+    desc:'Chega prontinho pra entregar, com somente o custo do envio e materia prima.',
     big:false
   }
 ];
@@ -575,7 +575,7 @@ function renderChance(){
   document.getElementById('winnerCard').classList.toggle('big-win', !!c.big);
 
   const nextBtn = document.getElementById('nextBtn');
-  nextBtn.textContent = chanceIndex < CHANCES.length - 1 ? 'Raspar a próxima chance →' : 'Ver minha oferta completa →';
+  nextBtn.textContent = chanceIndex < CHANCES.length - 1 ? 'Raspar a próxima chance →' : 'O Presente perfeito →';
   document.getElementById('nextBtnWrap').classList.remove('show');
 
   updateDots();
