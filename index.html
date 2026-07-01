@@ -125,6 +125,8 @@ header{
   padding:18px 28px;
   max-width:1180px; margin:0 auto;
 }
+.logo-wrap{display:flex; align-items:center;}
+.logo-img{display:none; height:30px; width:auto; object-fit:contain;}
 .logo{
   font-family:'Montserrat',sans-serif; font-weight:600; font-size:19px;
   letter-spacing:0.02em;
@@ -618,7 +620,12 @@ footer{background:var(--bg-elev); border-top:1px solid var(--line); padding:64px
 
 <header>
   <nav class="nav">
-    <div class="logo">KIT <em>TRINDADE</em></div>
+   <div class="logo-wrap">
+  <img class="logo-img" src="images/logo.png" alt="Kit Trindade"
+       onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+       onerror="console.warn('❌ Imagem não carregou:', this.src); this.style.display='none';">
+  <div class="logo">KIT <em>TRINDADE</em></div>
+</div>
     <div class="nav-links">
       <a href="#piramide">Fragrâncias</a>
       <a href="#ritual">Seu ritual</a>
@@ -938,7 +945,12 @@ footer{background:var(--bg-elev); border-top:1px solid var(--line); padding:64px
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <div class="logo" style="margin-bottom:16px;">KIT <em>TRINDADE</em></div>
+        <div class="logo-wrap" style="margin-bottom:16px;">
+  <img class="logo-img" src="images/logo.png" alt="Kit Trindade"
+       onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+       onerror="console.warn('❌ Imagem não carregou:', this.src); this.style.display='none';">
+  <div class="logo">KIT <em>TRINDADE</em></div>
+</div>
         <p style="max-width:280px;">Barbarius, Midtown e Enigma — três body splashes masculinos para acompanhar cada versão de você, em um único kit.</p>
       </div>
       <div>
